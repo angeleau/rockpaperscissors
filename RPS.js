@@ -1,98 +1,92 @@
 let humanScore = 0;
 let computerScore = 0;
-let gameIsOn = true;
+const winningScore = 3;
 
 function getComputerChoice() {
-    let computerChoice = Math.floor(Math.random() * 3);    
+    let computerChoice = Math.floor(Math.random() * 3); 
+
         if (computerChoice === 1) {
             return "rock";
         }
+
         else if (computerChoice === 2) {
             return "paper";
         }
+
         else {
             return "scissors";
-        } 
-          
+        }           
   }
 
-function getHumanChoice() {
-let humanChoice = prompt("Please type rock, paper or scissors")
-    if (humanChoice.toLowerCase() === "rock" || humanChoice.toLowerCase() === "paper" || humanChoice.toLowerCase() === "scissors") {
-        return humanChoice.toLowerCase();
-    }
-    else {
-        return "invalid value";
-    }
+function checkGameState (){
+    const gameOverDisplay = document.createElement("p");
 
-}
+    if (computerScore >= winningScore || humanScore >= winningScore) {
+        if (computerScore > humanScore){ 
+            gameOverDisplay.textContent = "Game Over - computer wins the game - ";
+        }
+
+        else {
+            gameOverDisplay.textContent = "Game Over - human wins the game - "
+        }    
+
+            gameOverDisplay.textContent += "click a button to start a new game"
+            roundDisplay.appendChild(gameOverDisplay);
+
+            computerScore = 0;
+            humanScore = 0;
+
+            return "gameover";
+        } 
+
+    else {
+        gameOverDisplay.textContent = "";
+    }
+}  
 
 function playRound (humanChoice, computerChoice) {
-console.log("human-"+humanChoice);
-console.log("computer-"+computerChoice);
-
     if (humanChoice === computerChoice) {
-        console.log("draw");
+        return "It's a draw!";
     }
 
-    else if (humanChoice === "invalid value") {
-        console.log("wrong value, try again");
+    if (
+        (humanChoice === "rock" && computerChoice === "scissors") ||
+        (humanChoice === "paper" && computerChoice === "rock") ||
+        (humanChoice === "scissors" && computerChoice === "paper")
+    ) {
+    humanScore++;
+    return `You win this round! ${humanChoice} beats ${computerChoice}`;
+    } else {
+    computerScore++;
+    return `You lose this round! ${computerChoice} beats ${humanChoice}`;
     }
-
-    else if(humanChoice === "rock"){
-        if (computerChoice === "paper"){
-            console.log("You lose!");
-            computerScore++;
-        }
-        else {
-            console.log("You win!");
-            humanScore++;
-        }
-    }
-
-    else if(humanChoice === "paper"){
-        if (computerChoice === "scissors"){
-            console.log("You lose!");
-            computerScore++;
-        }
-        else {
-            console.log("You win!");
-            humanScore++;
-        }
-    }
-
-    else {
-        if (computerChoice === "rock"){
-            console.log("You lose!");
-            computerScore++;
-        }
-        else {
-            console.log("You win!");
-            humanScore++;
-        }
-    }
-
-console.log ("human: "+humanScore, "computer: "+computerScore)
-
 }
 
-function playGame() {
-    while (gameIsOn) {        
-        playRound(getHumanChoice(), getComputerChoice());
-        if (computerScore === 3) {
-            console.log("You lose the game");
-            gameIsOn = false;
-        }
-        else if (humanScore === 3) {
-            console.log("You win the game");
-            gameIsOn = false;
-        }
 
-    }
+function playGame() { //listens to user input, calls playRound and displays result and score
+    
+        const buttons = document.querySelectorAll(".gameButton");
+        const roundDisplay = document.querySelector("#roundDisplay"); // Select the display area
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const result = playRound(button.id, getComputerChoice()); 
+                const resultParagraph = document.createElement("p"); 
+                const scoreDisplay = document.createElement("p");
+
+                resultParagraph.textContent = result; 
+                scoreDisplay.textContent = "human: "+humanScore+", computer: "+computerScore;
+
+                roundDisplay.textContent = ""; // Clear previous result 
+                roundDisplay.appendChild(resultParagraph); 
+                roundDisplay.appendChild(scoreDisplay);
+            
+        if (checkGameState() === "gameover") {
+            return "gameover";
+                }
+
+            });
+        });
 }
 
 playGame();
-
-
- 
-  
